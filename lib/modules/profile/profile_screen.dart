@@ -191,14 +191,52 @@ class ProfileScreen extends StatelessWidget {
   ) =>
       showModalBottomSheet(
         context: context,
-        backgroundColor: Colors.black87,
-        elevation: 5.4,
+        backgroundColor: Colors.grey.shade900,
+        elevation: 6.8,
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.only(
-            topRight: Radius.circular(15),
-            topLeft: Radius.circular(15),
+            topRight: Radius.circular(30),
+            topLeft: Radius.circular(30),
           ),
         ),
-        builder: (context) => Container(),
+        builder: (context) => SizedBox(
+          height: 170,
+          child: Column(
+            children: [
+              Container(
+                height: 5,
+                width: 50,
+                margin: const EdgeInsets.symmetric(vertical: 15),
+                decoration: BoxDecoration(
+                  color: Colors.grey,
+                  borderRadius: BorderRadius.circular(30),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                child: Column(
+                  children: [
+                    _buildRow(Icons.settings, 'Settings'),
+                    const SizedBox(height: 15),
+                    _buildRow(Icons.archive_outlined, 'Archive'),
+                    const SizedBox(height: 15),
+                    _buildRow(Icons.bookmark_border_outlined, 'Saved'),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
       );
+
+  Row _buildRow(IconData icon, String title) => Row(
+      children: [
+        Icon(icon, size: 30),
+        const SizedBox(width: 5),
+        Text(
+          title,
+          style: const TextStyle(fontSize: 18),
+        ),
+      ],
+    );
 }
