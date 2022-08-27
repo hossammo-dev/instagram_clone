@@ -19,7 +19,8 @@ void navigateRemove(
 
 //Widgets
 
-AppBar defaultAppBar({required String title, required List<Widget> actions}) => AppBar(
+AppBar defaultAppBar({required String title, List<Widget>? actions, Widget? leading}) => AppBar(
+  leading: leading,
   title: Text(title),
   actions: actions,
 );

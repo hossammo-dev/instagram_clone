@@ -2,12 +2,15 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../models/bookmark_model.dart';
 import '../../shared/cubit/main_cubit/main_cubit.dart';
 import '../../shared/cubit/main_cubit/main_states.dart';
 import '../../shared/widgets/cached_image.dart';
 import '../../shared/widgets/components.dart';
+import '../archive/archive_screen.dart';
 import '../bookmark/bookmarks_screen.dart';
 import '../post/add_post_screen.dart';
+import '../settings/settings_screen.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({Key? key}) : super(key: key);
@@ -28,7 +31,8 @@ class ProfileScreen extends StatelessWidget {
                       navigateTo(context, page: const AddPostScreen()),
                   icon: const Icon(Icons.add_box_outlined)),
               IconButton(
-                  onPressed: () => _showBottomSheet(context),
+                  onPressed: () =>
+                      _showBottomSheet(context, _userModel.bookmarks!),
                   icon: const Icon(Icons.menu)),
             ],
           ),
@@ -188,6 +192,7 @@ class ProfileScreen extends StatelessWidget {
 
   Future<dynamic> _showBottomSheet(
     BuildContext context,
+    List<BookmarkModel> bookmarks,
   ) =>
       showModalBottomSheet(
         context: context,
@@ -216,11 +221,22 @@ class ProfileScreen extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 12.0),
                 child: Column(
                   children: [
-                    _buildRow(Icons.settings, 'Settings'),
-                    const SizedBox(height: 15),
-                    _buildRow(Icons.archive_outlined, 'Archive'),
-                    const SizedBox(height: 15),
-                    _buildRow(Icons.bookmark_border_outlined, 'Saved'),
+                    _buildRow(
+                        Icons.settings,
+                        'Settings',
+                        () =>
+                            navigateTo(context, page: const SettingsScreen())),
+                    const SizedBox(height: 20),
+                    _buildRow(Icons.archive_outlined, 'Archive',
+                        () => navigateTo(context, page: const ArchiveScreen())),
+                    const SizedBox(height: 20),
+                    _buildRow(
+                        Icons.bookmark_border_outlined,
+                        'Saved',
+                        () => navigateTo(context,
+                            page: BookmarksScreen(
+                              bookmarks: bookmarks,
+                            ))),
                   ],
                 ),
               ),
@@ -229,14 +245,18 @@ class ProfileScreen extends StatelessWidget {
         ),
       );
 
-  Row _buildRow(IconData icon, String title) => Row(
-      children: [
-        Icon(icon, size: 30),
-        const SizedBox(width: 5),
-        Text(
-          title,
-          style: const TextStyle(fontSize: 18),
+  Widget _buildRow(IconData icon, String title, VoidCallback onTap) =>
+      GestureDetector(
+        onTap: onTap,
+        child: Row(
+          children: [
+            Icon(icon, size: 30),
+            const SizedBox(width: 5),
+            Text(
+              title,
+              style: const TextStyle(fontSize: 18),
+            ),
+          ],
         ),
-      ],
-    );
+      );
 }

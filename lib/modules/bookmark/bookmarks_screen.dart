@@ -4,11 +4,9 @@ import '../../models/bookmark_model.dart';
 import '../../shared/widgets/cached_image.dart';
 
 class BookmarksScreen extends StatelessWidget {
-  const BookmarksScreen({Key? key, this.bookmarks}) : super(key: key);
+  const BookmarksScreen({Key? key, required this.bookmarks}) : super(key: key);
 
   final List<BookmarkModel>? bookmarks;
-
- 
 
   @override
   Widget build(BuildContext context) {
