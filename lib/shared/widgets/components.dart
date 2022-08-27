@@ -59,10 +59,13 @@ TextFormField defaultTextField({
     );
 
 MaterialButton defaultButton(
-        {required String title, required VoidCallback btnFun, Color btnColor = Colors.teal}) =>
+        {required String title, required VoidCallback btnFun, Color btnColor = Colors.teal, double height = 48}) =>
     MaterialButton(
       onPressed: btnFun,
       color: btnColor,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10)
+      ),
       padding: const EdgeInsets.all(8),
       minWidth: double.infinity,
       height: 48,

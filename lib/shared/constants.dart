@@ -12,7 +12,7 @@ class Constants {
     const FeedScreen(),
     SearchScreen(),
     const ActivityScreen(),
-    const ProfileScreen(),
+    ProfileScreen(),
   ];
 
   

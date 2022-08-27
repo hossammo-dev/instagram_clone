@@ -3,8 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../models/bookmark_model.dart';
+import '../../models/user_model.dart';
+import '../../shared/constants.dart';
 import '../../shared/cubit/main_cubit/main_cubit.dart';
 import '../../shared/cubit/main_cubit/main_states.dart';
+import '../../shared/network/remote/firebase_services.dart';
 import '../../shared/widgets/cached_image.dart';
 import '../../shared/widgets/components.dart';
 import '../archive/archive_screen.dart';
@@ -12,138 +15,221 @@ import '../bookmark/bookmarks_screen.dart';
 import '../post/add_post_screen.dart';
 import '../settings/settings_screen.dart';
 
-class ProfileScreen extends StatelessWidget {
-  const ProfileScreen({Key? key}) : super(key: key);
+// ignore: must_be_immutable
+class ProfileScreen extends StatefulWidget {
+  ProfileScreen({Key? key, this.userId}) : super(key: key);
+
+  late String? userId;
+
+  @override
+  State<ProfileScreen> createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends State<ProfileScreen> {
+  UserModel? _model;
+  UserModel? _userModel;
+
+  @override
+  void initState() {
+    if (widget.userId != null) {
+      Future.delayed(const Duration(seconds: 1), () async {
+        await _getUserData();
+        _determineUser("alt");
+      });
+    } else {
+      _determineUser("profile");
+    }
+    super.initState();
+  }
+
+  Future<void> _getUserData() async {
+    await FirebaseServices.get(collection: 'users', docId: widget.userId!)
+        .then((value) {
+      _model = UserModel.fromjson(value.data()!);
+    });
+  }
+
+  void _determineUser(String key) {
+    if (key == "profile") {
+      _userModel = MainCubit.get(context).userModel;
+    } else {
+      _userModel = _model;
+    }
+    setState(() {});
+  }
 
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<MainCubit, MainStates>(
       listener: (context, state) {},
       builder: (context, state) {
-        final _userModel = MainCubit.get(context).userModel;
         final _mainCubit = MainCubit.get(context);
-        return Scaffold(
-          appBar: defaultAppBar(
-            title: _userModel!.username!,
-            actions: [
-              IconButton(
-                  onPressed: () =>
-                      navigateTo(context, page: const AddPostScreen()),
-                  icon: const Icon(Icons.add_box_outlined)),
-              IconButton(
-                  onPressed: () =>
-                      _showBottomSheet(context, _userModel.bookmarks!),
-                  icon: const Icon(Icons.menu)),
-            ],
-          ),
-          body: SingleChildScrollView(
-            physics: const BouncingScrollPhysics(),
-            child: Padding(
-              padding: const EdgeInsets.all(12.0),
-              child: Column(
-                children: [
-                  SizedBox(
-                    height: 200,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+        if ((_userModel == null)) {
+          return const Scaffold(
+            body: Center(
+              child: CircularProgressIndicator(),
+            ),
+          );
+        } else {
+          final _admin = _userModel?.uid == Constants.userId;
+          return Scaffold(
+            appBar: defaultAppBar(
+              title: _userModel!.username!,
+              actions: (_admin)
+                  ? [
+                      IconButton(
+                          onPressed: () =>
+                              navigateTo(context, page: const AddPostScreen()),
+                          icon: const Icon(Icons.add_box_outlined)),
+                      IconButton(
+                          onPressed: () =>
+                              _showBottomSheet(context, _userModel!.bookmarks!),
+                          icon: const Icon(Icons.menu)),
+                    ]
+                  : [
+                      IconButton(
+                          onPressed: () {},
+                          icon: const Icon(Icons.notifications_outlined)),
+                      IconButton(
+                          onPressed: () {}, icon: const Icon(Icons.more_vert)),
+                    ],
+            ),
+            body: SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
+              child: Padding(
+                padding: const EdgeInsets.all(12.0),
+                child: Column(
+                  children: [
+                    SizedBox(
+                      height: 150,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              CircleAvatar(
+                                backgroundImage:
+                                    NetworkImage(_userModel!.avatarUrl!),
+                                radius: 35,
+                              ),
+                              _buildProfileCard(
+                                title: 'Posts',
+                                number: _userModel!.posts!.length.toString(),
+                              ),
+                              _buildProfileCard(
+                                title: 'Followers',
+                                number: '0',
+                              ),
+                              _buildProfileCard(
+                                title: 'Following',
+                                number: '0',
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 5),
+                          Text(
+                            _userModel!.username!,
+                            style: const TextStyle(fontSize: 16),
+                          ),
+                          const SizedBox(height: 5),
+                          Text(
+                            'Biography', //todo add bio for user
+                            style: TextStyle(
+                                color: Colors.white.withOpacity(0.85)),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    (_admin)
+                        ? defaultButton(
+                            title: 'Edit Profile',
+                            btnColor: Colors.grey.shade900,
+                            btnFun: () => navigateTo(
+                                  context,
+                                  page: BookmarksScreen(
+                                      bookmarks: _userModel!.bookmarks),
+                                ))
+                        : Row(
+                            children: [
+                              Expanded(
+                                  child: defaultButton(
+                                      btnColor: Colors.grey.shade900,
+                                      title: 'Follow',
+                                      btnFun: () {})),
+                              const SizedBox(width: 10),
+                              Expanded(
+                                  child: defaultButton(
+                                      btnColor: Colors.grey.shade900,
+                                      title: 'Message',
+                                      btnFun: () {})),
+                            ],
+                          ),
+                    const SizedBox(height: 20),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            CircleAvatar(
-                              backgroundImage:
-                                  NetworkImage(_userModel.avatarUrl!),
-                              radius: 35,
-                            ),
-                            _buildProfileCard(
-                              title: 'Posts',
-                              number: _userModel.posts!.length.toString(),
-                            ),
-                            _buildProfileCard(
-                              title: 'Followers',
-                              number: '0',
-                            ),
-                            _buildProfileCard(
-                              title: 'Following',
-                              number: '0',
-                            ),
-                          ],
+                        Expanded(
+                          child: _buildProfileMid(
+                            icon: Icons.grid_on,
+                            cubit: _mainCubit,
+                            isGrid: _mainCubit.isGrid,
+                            onTapped: () {
+                              if (!_mainCubit.isGrid) {
+                                _mainCubit.changeGridState();
+                              }
+                            },
+                          ),
                         ),
-                        const SizedBox(height: 5),
-                        Text(
-                          _userModel.username!,
-                          style: const TextStyle(fontSize: 16),
-                        ),
-                        Text(
-                          _userModel.email!,
-                          style: const TextStyle(fontSize: 16),
-                        ),
-                        Text(
-                          'Biography',
-                          style:
-                              TextStyle(color: Colors.white.withOpacity(0.85)),
+                        const SizedBox(width: 5),
+                        Expanded(
+                          child: _buildProfileMid(
+                            icon: Icons.list_alt_outlined,
+                            cubit: _mainCubit,
+                            isGrid: !_mainCubit.isGrid,
+                            onTapped: () {
+                              if (_mainCubit.isGrid) {
+                                _mainCubit.changeGridState();
+                              }
+                            },
+                          ),
                         ),
                       ],
                     ),
-                  ),
-                  const SizedBox(height: 10),
-                  defaultButton(
-                      title: 'Edit Profile',
-                      btnFun: () => navigateTo(
-                            context,
-                            page: BookmarksScreen(
-                                bookmarks: _userModel.bookmarks),
-                          )),
-                  const SizedBox(height: 20),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      Expanded(
-                        child: _buildProfileMid(
-                          icon: Icons.grid_on,
-                          cubit: _mainCubit,
-                          isGrid: _mainCubit.isGrid,
-                          onTapped: () {
-                            if (!_mainCubit.isGrid) {
-                              _mainCubit.changeGridState();
-                            }
-                          },
-                        ),
-                      ),
-                      const SizedBox(width: 5),
-                      Expanded(
-                        child: _buildProfileMid(
-                          icon: Icons.list_alt_outlined,
-                          cubit: _mainCubit,
-                          isGrid: !_mainCubit.isGrid,
-                          onTapped: () {
-                            if (_mainCubit.isGrid) {
-                              _mainCubit.changeGridState();
-                            }
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 5),
-                  GridView.builder(
-                    itemCount: _userModel.posts!.length,
-                    physics: const NeverScrollableScrollPhysics(),
-                    shrinkWrap: true,
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 3,
-                      crossAxisSpacing: 3,
-                      mainAxisSpacing: 3,
-                    ),
-                    itemBuilder: (context, index) => CachedImage(
-                        imageUrl: _userModel.posts![index].postImageUrl!),
-                  ),
-                ],
+                    const SizedBox(height: 5),
+                    (_mainCubit.isGrid)
+                        ? GridView.builder(
+                            itemCount: _userModel!.posts!.length,
+                            physics: const NeverScrollableScrollPhysics(),
+                            shrinkWrap: true,
+                            gridDelegate:
+                                const SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 3,
+                              crossAxisSpacing: 3,
+                              mainAxisSpacing: 3,
+                            ),
+                            itemBuilder: (context, index) => CachedImage(
+                                imageUrl:
+                                    _userModel!.posts![index].postImageUrl!),
+                          )
+                        : ListView.builder(
+                            itemCount: _userModel!.posts!.length,
+                            physics: const NeverScrollableScrollPhysics(),
+                            shrinkWrap: true,
+                            itemBuilder: (context, index) => Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 8.0),
+                              child: CachedImage(
+                                  imageUrl:
+                                      _userModel!.posts![index].postImageUrl!),
+                            ),
+                          ),
+                  ],
+                ),
               ),
             ),
-          ),
-        );
+          );
+        }
       },
     );
   }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:instagram_clone/modules/profile/profile_screen.dart';
 
 import '../../models/bookmark_model.dart';
 import '../../models/post_model.dart';
@@ -64,18 +65,28 @@ class _FeedScreenState extends State<FeedScreen> {
                       padding: const EdgeInsets.all(12.0),
                       child: Column(
                         children: [
-                          Row(
-                            children: [
-                              CachedImage(
-                                imageUrl: _post.avatarUrl!,
-                                circle: true,
-                              ),
-                              const SizedBox(width: 10),
-                              Text(
-                                _post.username!,
-                                style: const TextStyle(fontSize: 16),
-                              ),
-                            ],
+                          GestureDetector(
+                            onTap: () {
+                              (_post.uid == Constants.userId)
+                                  ? _mainCubit.changeIndex(3)
+                                  : navigateTo(
+                                      context,
+                                      page: ProfileScreen(userId: _post.uid),
+                                    );
+                            },
+                            child: Row(
+                              children: [
+                                CachedImage(
+                                  imageUrl: _post.avatarUrl!,
+                                  circle: true,
+                                ),
+                                const SizedBox(width: 10),
+                                Text(
+                                  _post.username!,
+                                  style: const TextStyle(fontSize: 16),
+                                ),
+                              ],
+                            ),
                           ),
                           const SizedBox(height: 10),
                           CachedImage(imageUrl: _post.postImageUrl!),
