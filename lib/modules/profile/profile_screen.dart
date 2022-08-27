@@ -14,6 +14,7 @@ import '../archive/archive_screen.dart';
 import '../bookmark/bookmarks_screen.dart';
 import '../post/add_post_screen.dart';
 import '../settings/settings_screen.dart';
+import 'edit_profile_screen.dart';
 
 // ignore: must_be_immutable
 class ProfileScreen extends StatefulWidget {
@@ -134,7 +135,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           ),
                           const SizedBox(height: 5),
                           Text(
-                            'Biography', //todo add bio for user
+                            _userModel!.bio!, //todo add bio for user
                             style: TextStyle(
                                 color: Colors.white.withOpacity(0.85)),
                           ),
@@ -148,8 +149,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             btnColor: Colors.grey.shade900,
                             btnFun: () => navigateTo(
                                   context,
-                                  page: BookmarksScreen(
-                                      bookmarks: _userModel!.bookmarks),
+                                  page: EditProfileScreen(_userModel!),
                                 ))
                         : Row(
                             children: [
@@ -218,7 +218,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             physics: const NeverScrollableScrollPhysics(),
                             shrinkWrap: true,
                             itemBuilder: (context, index) => Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 8.0),
+                              padding:
+                                  const EdgeInsets.symmetric(vertical: 8.0),
                               child: CachedImage(
                                   imageUrl:
                                       _userModel!.posts![index].postImageUrl!),

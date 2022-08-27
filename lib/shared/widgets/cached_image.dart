@@ -8,11 +8,13 @@ class CachedImage extends StatelessWidget {
     required this.imageUrl,
     this.circle = false,
     this.withSize = false,
+    this.radius = 20,
   }) : super(key: key);
 
   final String imageUrl;
   late bool circle;
   late bool withSize;
+  late double radius;
   
 
   @override
@@ -25,7 +27,7 @@ class CachedImage extends StatelessWidget {
       imageBuilder: (circle)
           ? (context, imageProvider) => CircleAvatar(
                 backgroundImage: imageProvider,
-                radius: 20,
+                radius: radius,
               )
           : null,
       placeholder: (context, url) => const CircularProgressIndicator(),

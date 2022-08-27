@@ -7,6 +7,7 @@ class UserModel {
   String? email;
   String? phoneNumber;
   String? avatarUrl;
+  String? bio;
   List<PostModel>? likedPosts;
   List<PostModel>? posts;
   List<BookmarkModel>? bookmarks;
@@ -19,6 +20,7 @@ class UserModel {
     this.email,
     this.phoneNumber,
     this.avatarUrl,
+    this.bio,
     this.likedPosts,
     this.posts,
     this.bookmarks,
@@ -32,6 +34,7 @@ class UserModel {
     email = json['email'];
     phoneNumber = json['phone_number'];
     avatarUrl = json['avatar_url'];
+    bio = json['bio'];
     likedPosts =
         List.from(json['liked_posts'].map((x) => PostModel.fromJson(x)));
     posts = List.from(json['posts'].map((x) => PostModel.fromJson(x)));
@@ -50,6 +53,7 @@ class UserModel {
         'email': email,
         'phone_number': phoneNumber,
         'avatar_url': avatarUrl,
+        'bio': bio,
         'liked_posts': likedPosts,
         'posts': posts,
         'bookmarks': bookmarks,

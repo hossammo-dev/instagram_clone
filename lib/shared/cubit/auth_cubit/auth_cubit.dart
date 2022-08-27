@@ -61,6 +61,7 @@ class AuthCubit extends Cubit<AuthStates> {
         email: email,
         phoneNumber: phoneNumber,
         avatarUrl: Constants.userImage,
+        bio: '',
         posts: [],
         likedPosts: [],
         bookmarks: [],
