@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
+import '../../layouts/home_layout.dart';
 import '../../models/user_model.dart';
+import '../../shared/cubit/main_cubit/main_cubit.dart';
 import '../../shared/widgets/cached_image.dart';
 import '../../shared/widgets/components.dart';
 
@@ -31,7 +33,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         title: 'Edit Profile',
         actions: [
           IconButton(
-              onPressed: () {},
+              onPressed: () => MainCubit.get(context)
+                  .editProfile(_nameController.text, _bioControlller.text)
+                  .whenComplete(
+                      () => navigateRemove(context, page: const HomeLayout())),
               icon: const Icon(
                 Icons.check,
                 color: Colors.teal,

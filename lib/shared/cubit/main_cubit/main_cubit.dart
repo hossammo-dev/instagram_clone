@@ -236,6 +236,20 @@ class MainCubit extends Cubit<MainStates> {
     );
   }
 
+  //edit profile
+  Future<void> editProfile(String username, String bio) async {
+    await FirebaseServices.update(
+        collection: 'users',
+        docId: _userModel!.uid!,
+        data: {
+          'username': username,
+          'bio': bio,
+        }).whenComplete(() {
+      getUserData();
+      emit(MainEditProfileSuccessState());
+    }).catchError((error) => emit(MainEditProfileErrorState()));
+  }
+
   Future<File?> pickImage(ImageSource source) async {
     File? _imageFile;
     XFile? _pickedFile;

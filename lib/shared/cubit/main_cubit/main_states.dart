@@ -54,3 +54,7 @@ class MainLoadingState extends MainStates {}
   //bookmark post
   class MainBookmarkPostSuccessState extends MainStates {}
   class MainBookmarkPostErrorState extends MainStates {}
+
+  //edit profile states
+  class MainEditProfileSuccessState extends MainStates{}
+  class MainEditProfileErrorState extends MainStates{}
