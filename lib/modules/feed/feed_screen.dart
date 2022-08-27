@@ -22,6 +22,16 @@ class FeedScreen extends StatefulWidget {
 
 class _FeedScreenState extends State<FeedScreen> {
   @override
+  void didChangeDependencies() {
+    if (MainCubit.get(context).userModel == null &&
+        MainCubit.get(context).posts.isEmpty) {
+      MainCubit.get(context).getUserData();
+      MainCubit.get(context).getPosts();
+    }
+    super.didChangeDependencies();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return BlocConsumer<MainCubit, MainStates>(
       listener: (context, state) {},
@@ -41,82 +51,88 @@ class _FeedScreenState extends State<FeedScreen> {
                   icon: const Icon(Icons.send_outlined)),
             ],
           ),
-          body: ListView.builder(
-            itemCount: _mainCubit.posts.length,
-            physics: const BouncingScrollPhysics(),
-            itemBuilder: (context, index) {
-              final PostModel _post = _mainCubit.posts[index];
-              return Padding(
-                padding: const EdgeInsets.all(12.0),
-                child: Column(
-                  children: [
-                    Row(
-                      children: [
-                        CachedImage(
-                          imageUrl: _post.avatarUrl!,
-                          circle: true,
-                        ),
-                        const SizedBox(width: 10),
-                        Text(
-                          _post.username!,
-                          style: const TextStyle(fontSize: 16),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 10),
-                    CachedImage(imageUrl: _post.postImageUrl!),
-                    const SizedBox(height: 10),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Row(
-                          children: [
-                            GestureDetector(
-                              onTap: () =>
-                                  _checkForPostLikes(_post, _mainCubit, index),
-                              onLongPress: () => navigateTo(context,
-                                  page: PostLikesScreen(_post.likes!)),
-                              child: (_post.likes!.any((element) =>
-                                      element.uid == Constants.userId))
-                                  ? const Icon(Icons.favorite,
-                                      color: Colors.red, size: 30)
-                                  : const Icon(
-                                      Icons.favorite_border_outlined,
-                                      size: 30,
-                                    ),
-                            ),
-                            const SizedBox(width: 10),
-                            IconButton(
-                                onPressed: () => navigateTo(context,
-                                    page: PostCommentsScreen(
-                                      comments: _post.comments!,
-                                      postId: _post.postId!,
-                                    )),
-                                icon: const Icon(Icons.comment)),
-                            IconButton(
-                                onPressed: () {
-                                  print(_post.likes!.any((element) =>
-                                      element.uid ==
-                                      _mainCubit.userModel!.uid));
-                                },
-                                icon: const Icon(Icons.share)),
-                          ],
-                        ),
-                        IconButton(
-                            onPressed: () =>
-                                _checkForPostBookmarks(_mainCubit, _post),
-                            icon: (_mainCubit.userModel!.bookmarks!.any(
-                                    (element) =>
-                                        _post.postId == element.post?.postId))
-                                ? const Icon(Icons.bookmark)
-                                : const Icon(Icons.bookmark_outline_outlined))
-                      ],
-                    ),
-                  ],
+          body: (_mainCubit.posts.isEmpty)
+              ? const Center(
+                  child: CircularProgressIndicator(),
+                )
+              : ListView.builder(
+                  itemCount: _mainCubit.posts.length,
+                  physics: const BouncingScrollPhysics(),
+                  itemBuilder: (context, index) {
+                    final PostModel _post = _mainCubit.posts[index];
+                    return Padding(
+                      padding: const EdgeInsets.all(12.0),
+                      child: Column(
+                        children: [
+                          Row(
+                            children: [
+                              CachedImage(
+                                imageUrl: _post.avatarUrl!,
+                                circle: true,
+                              ),
+                              const SizedBox(width: 10),
+                              Text(
+                                _post.username!,
+                                style: const TextStyle(fontSize: 16),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 10),
+                          CachedImage(imageUrl: _post.postImageUrl!),
+                          const SizedBox(height: 10),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Row(
+                                children: [
+                                  GestureDetector(
+                                    onTap: () => _checkForPostLikes(
+                                        _post, _mainCubit, index),
+                                    onLongPress: () => navigateTo(context,
+                                        page: PostLikesScreen(_post.likes!)),
+                                    child: (_post.likes!.any((element) =>
+                                            element.uid == Constants.userId))
+                                        ? const Icon(Icons.favorite,
+                                            color: Colors.red, size: 30)
+                                        : const Icon(
+                                            Icons.favorite_border_outlined,
+                                            size: 30,
+                                          ),
+                                  ),
+                                  const SizedBox(width: 10),
+                                  IconButton(
+                                      onPressed: () => navigateTo(context,
+                                          page: PostCommentsScreen(
+                                            comments: _post.comments!,
+                                            postId: _post.postId!,
+                                          )),
+                                      icon: const Icon(Icons.comment)),
+                                  IconButton(
+                                      onPressed: () {
+                                        print(_post.likes!.any((element) =>
+                                            element.uid ==
+                                            _mainCubit.userModel!.uid));
+                                      },
+                                      icon: const Icon(Icons.share)),
+                                ],
+                              ),
+                              IconButton(
+                                  onPressed: () =>
+                                      _checkForPostBookmarks(_mainCubit, _post),
+                                  icon: (_mainCubit.userModel!.bookmarks!.any(
+                                          (element) =>
+                                              _post.postId ==
+                                              element.post?.postId))
+                                      ? const Icon(Icons.bookmark)
+                                      : const Icon(
+                                          Icons.bookmark_outline_outlined))
+                            ],
+                          ),
+                        ],
+                      ),
+                    );
+                  },
                 ),
-              );
-            },
-          ),
         );
       },
     );

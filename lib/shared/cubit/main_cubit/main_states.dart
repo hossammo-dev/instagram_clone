@@ -18,6 +18,14 @@ class MainLoadingState extends MainStates {}
   class MainGetAllUsersSuccessState extends MainStates {}
   class MainGetAllUsersErrorState extends MainStates {}
 
+  //follow user
+  class MainFollowUserSuccessState extends MainStates{}
+  class MainFollowUserErrorState extends MainStates{}
+
+  //unfollow user
+  class MainUnFollowUserSuccessState extends MainStates{}
+  class MainUnFollowUserErrorState extends MainStates{}
+
 //post
 
   //get posts

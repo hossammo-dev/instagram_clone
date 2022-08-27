@@ -1,17 +1,18 @@
 import 'dart:io';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_firestore/cloud_firestore.dart'; //todo remove
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:instagram_clone/models/user_model.dart';
-import 'package:instagram_clone/shared/constants.dart';
-import 'package:instagram_clone/shared/cubit/main_cubit/main_states.dart';
-import 'package:instagram_clone/shared/network/remote/firebase_services.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../models/bookmark_model.dart';
 import '../../../models/post_model.dart';
+import '../../../models/user_model.dart';
+import '../../constants.dart';
+import '../../network/local/cache_helper.dart';
+import '../../network/remote/firebase_services.dart';
+import 'main_states.dart';
 
 class MainCubit extends Cubit<MainStates> {
   MainCubit() : super(MainInitState());
@@ -56,16 +57,21 @@ class MainCubit extends Cubit<MainStates> {
     });
   }
 
+  //remove cached data
+  void removeCachedData() async {
+    await CacheHelper.remove('uid');
+    _userModel = UserModel();
+    _posts.clear();
+    _users.clear();
+    _currentIndex = 0;
+    _isGrid = true;
+  }
+
+  //follow user
+  void followUser() {}
+
   //get posts
   Future<void> getPosts() async {
-    // FirebaseServices.getStream(collection: 'posts').listen((event) {
-    //   debugPrint('${event.docs.length}');
-    //   for (var post in event.docs) {
-    //     _posts.add(PostModel.fromJson(post.data()));
-    //   }
-    //   debugPrint('${_posts.isEmpty}');
-    //   debugPrint('-username: ${_posts[0].username}');
-    // });
     _posts.clear();
     await FirebaseFirestore.instance
         .collection('posts')
@@ -229,8 +235,6 @@ class MainCubit extends Cubit<MainStates> {
       (error) => emit(MainBookmarkPostErrorState()),
     );
   }
-
-
 
   Future<File?> pickImage(ImageSource source) async {
     File? _imageFile;
