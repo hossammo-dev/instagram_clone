@@ -12,3 +12,7 @@ class AuthLoginErrorState extends AuthStates{}
 //register states
 class AuthRegisterSuccessState extends AuthStates{}
 class AuthRegisterErrorState extends AuthStates{}
+
+//log use out states
+class AuthLogoutSuccessState extends AuthStates{}
+class AuthLogoutErrorState extends AuthStates{}

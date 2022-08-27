@@ -91,6 +91,16 @@ class AuthCubit extends Cubit<AuthStates> {
     return _success;
   }
 
+  //log user out
+  Future<void> logUserOut() async {
+    await FirebaseServices.logout().then((_) {
+      emit(AuthLogoutSuccessState());
+    }).catchError((error) {
+      debugPrint(error.toString());
+      emit(AuthLogoutSuccessState());
+    });
+  }
+
   //change pass state
   void changePassVisibility() {
     _showPass = !_showPass;

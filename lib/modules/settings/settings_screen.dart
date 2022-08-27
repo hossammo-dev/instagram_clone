@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:instagram_clone/shared/widgets/components.dart';
 
+import '../../shared/cubit/auth_cubit/auth_cubit.dart';
+import '../../shared/cubit/main_cubit/main_cubit.dart';
+import '../auth/auth_screen.dart';
+
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({Key? key}) : super(key: key);
 
@@ -18,7 +22,7 @@ class SettingsScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildRow(Icons.check, 'Theme', () {}),
+            _buildRow(Icons.check, 'Theme', () {}), //todo theme icon
             const SizedBox(height: 20),
             _buildRow(Icons.notifications_outlined, 'Notifications', () {}),
             const SizedBox(height: 20),
@@ -27,7 +31,13 @@ class SettingsScreen extends StatelessWidget {
             _buildRow(Icons.info_outline_rounded, 'About', () {}),
             const SizedBox(height: 20),
             TextButton(
-                onPressed: () {},
+                onPressed: () => AuthCubit.get(context)
+                    .logUserOut()
+                    .whenComplete(
+                        () {
+                          MainCubit.get(context).removeCachedData();
+                          navigateRemove(context, page: AuthScreen());
+                        }),
                 child: const Text(
                   'Log out',
                   style: TextStyle(fontSize: 18),
