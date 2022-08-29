@@ -120,9 +120,6 @@ class _FeedScreenState extends State<FeedScreen> {
                                       icon: const Icon(Icons.comment)),
                                   IconButton(
                                       onPressed: () {
-                                        print(_post.likes!.any((element) =>
-                                            element.uid ==
-                                            _mainCubit.userModel!.uid));
                                       },
                                       icon: const Icon(Icons.share)),
                                 ],

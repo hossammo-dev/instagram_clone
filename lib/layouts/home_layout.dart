@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:instagram_clone/modules/post/add_post_screen.dart';
-import 'package:instagram_clone/modules/chat/chats_screen.dart';
 import 'package:instagram_clone/shared/constants.dart';
 import 'package:instagram_clone/shared/cubit/main_cubit/main_cubit.dart';
 import 'package:instagram_clone/shared/cubit/main_cubit/main_states.dart';
-import 'package:instagram_clone/shared/widgets/components.dart';
 
 class HomeLayout extends StatelessWidget {
   const HomeLayout({Key? key}) : super(key: key);

@@ -11,8 +11,7 @@ class FirebaseServices {
 
   //login
   static Future<UserCredential> login(
-          {String? email, String? password}) async =>
-      await _auth.signInWithEmailAndPassword(
+          {String? email, String? password}) async => await _auth.signInWithEmailAndPassword(
           email: email!, password: password!);
 
   //register

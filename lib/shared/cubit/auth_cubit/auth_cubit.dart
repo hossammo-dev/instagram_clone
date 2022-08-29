@@ -22,6 +22,7 @@ class AuthCubit extends Cubit<AuthStates> {
   //log user in
   Future<bool> logUserIn(
       {required String email, required String password}) async {
+
     late bool _success;
     await FirebaseServices.login(email: email, password: password).then((user) {
       Constants.userId = user.user!.uid;

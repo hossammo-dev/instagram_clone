@@ -88,6 +88,7 @@ class AuthScreen extends StatelessWidget {
                           btnFun: () {
                             if (_formKey.currentState!.validate()) {
                               if (_authCubit.isLogin) {
+                                print('1');
                                 _authCubit
                                     .logUserIn(
                                         email: _emailController.text,
