@@ -66,6 +66,8 @@ class AuthCubit extends Cubit<AuthStates> {
         posts: [],
         likedPosts: [],
         bookmarks: [],
+        followers: [],
+        following: [],
       );
       FirebaseServices.save(
         collection: 'users',

@@ -109,9 +109,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              CircleAvatar(
-                                backgroundImage:
-                                    NetworkImage(_userModel!.avatarUrl!),
+                              CachedImage(
+                                imageUrl: _userModel!.avatarUrl!,
+                                circle: true,
                                 radius: 35,
                               ),
                               _buildProfileCard(
@@ -120,11 +120,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               ),
                               _buildProfileCard(
                                 title: 'Followers',
-                                number: '0',
+                                number: _userModel!.followers!.length.toString(),
                               ),
                               _buildProfileCard(
                                 title: 'Following',
-                                number: '0',
+                                number: _userModel!.following!.length.toString(),
                               ),
                             ],
                           ),
@@ -153,11 +153,30 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 ))
                         : Row(
                             children: [
-                              Expanded(
-                                  child: defaultButton(
-                                      btnColor: Colors.grey.shade900,
-                                      title: 'Follow',
-                                      btnFun: () {})),
+                              (_userModel!.followers!.any((element) =>
+                                      element.uid == _mainCubit.userModel!.uid))
+                                  ? Expanded(
+                                      child: defaultButton(
+                                        btnColor: Colors.grey.shade900,
+                                        title: 'unFollow',
+                                        btnFun: () => _mainCubit.unFollowUser(
+                                          uid: _userModel!.uid!,
+                                          username: _userModel!.username!,
+                                          avatarUrl: _userModel!.avatarUrl!,
+                                        ),
+                                      ),
+                                    )
+                                  : Expanded(
+                                      child: defaultButton(
+                                        btnColor: Colors.grey.shade900,
+                                        title: 'Follow',
+                                        btnFun: () => _mainCubit.followUser(
+                                          uid: _userModel!.uid!,
+                                          username: _userModel!.username!,
+                                          avatarUrl: _userModel!.avatarUrl!,
+                                        ),
+                                      ),
+                                    ),
                               const SizedBox(width: 10),
                               Expanded(
                                   child: defaultButton(

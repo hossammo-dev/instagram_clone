@@ -68,7 +68,79 @@ class MainCubit extends Cubit<MainStates> {
   }
 
   //follow user
-  void followUser() {}
+  Future<void> followUser({
+    required String uid,
+    required String username,
+    required String avatarUrl,
+  }) async {
+    FollowModel _followerModel = FollowModel(
+      uid: _userModel!.uid!,
+      avatarUrl: _userModel!.avatarUrl,
+      username: _userModel!.username,
+    );
+
+    //add data to follower
+    //Me => Him
+    FirebaseServices.update(collection: 'users', docId: uid, data: {
+      'followers': FieldValue.arrayUnion([_followerModel.toJson()]),
+    }).whenComplete(() {
+      FollowModel _followingModel = FollowModel(
+        uid: uid,
+        avatarUrl: avatarUrl,
+        username: username,
+      );
+      //add data to following
+      //Him => Me
+      FirebaseServices.update(
+          collection: 'users',
+          docId: _userModel!.uid!,
+          data: {
+            'following': FieldValue.arrayUnion([_followingModel.toJson()]),
+          });
+      //update user model
+      _userModel?.followers?.add(_followerModel);
+      emit(MainFollowUserSuccessState());
+    }).catchError((error) {
+      debugPrint(error.toString());
+      emit(MainFollowUserErrorState());
+    });
+  }
+
+  //unfollow user
+  Future<void> unFollowUser({
+    required String uid,
+    required String username,
+    required String avatarUrl,
+  }) async {
+    FollowModel _followerModel = FollowModel(
+      uid: _userModel!.uid!,
+      avatarUrl: _userModel!.avatarUrl,
+      username: _userModel!.username,
+    );
+    FirebaseServices.update(collection: 'users', docId: uid, data: {
+      'followers': FieldValue.arrayRemove([_followerModel.toJson()]),
+    }).whenComplete(() {
+      FollowModel _followingModel = FollowModel(
+        uid: uid,
+        avatarUrl: avatarUrl,
+        username: username,
+      );
+
+      FirebaseServices.update(
+          collection: 'users',
+          docId: _userModel!.uid!,
+          data: {
+            'following': FieldValue.arrayRemove([_followingModel.toJson()]),
+          });
+      //update user model
+      _userModel?.followers?.remove(_followerModel);
+
+      emit(MainFollowUserSuccessState());
+    }).catchError((error) {
+      debugPrint(error.toString());
+      emit(MainFollowUserErrorState());
+    });
+  }
 
   //get posts
   Future<void> getPosts() async {
@@ -117,7 +189,6 @@ class MainCubit extends Cubit<MainStates> {
     );
     await getPosts();
     getUserData();
-    debugPrint('Done');
     emit(MainCreatePostSuccessState());
   }
 

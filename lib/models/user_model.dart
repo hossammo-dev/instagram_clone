@@ -11,8 +11,8 @@ class UserModel {
   List<PostModel>? likedPosts;
   List<PostModel>? posts;
   List<BookmarkModel>? bookmarks;
-  // List<Follower>? followers;
-  // List<Following>? following;
+  List<FollowModel>? followers;
+  List<FollowModel>? following;
 
   UserModel({
     this.uid,
@@ -24,9 +24,9 @@ class UserModel {
     this.likedPosts,
     this.posts,
     this.bookmarks,
+    this.followers,
+    this.following,
   });
-
-  //Map<String, PostModel>
 
   UserModel.fromjson(Map<String, dynamic> json) {
     uid = json['uid'];
@@ -41,10 +41,8 @@ class UserModel {
     bookmarks =
         List.from(json['bookmarks'].map((x) => BookmarkModel.fromJson(x)));
 
-    // followers = json['followers']
-    //     .forEach((follower) => Follower.fromJson(follower.data()));
-    // following = json['following']
-    //     .forEach((following) => Follower.fromJson(following.data()));
+    followers = List.from(json['followers'].map((x) => FollowModel.fromJson(x)));
+    following = List.from(json['following'].map((x) => FollowModel.fromJson(x)));
   }
 
   Map<String, dynamic> toJson() => {
@@ -57,35 +55,19 @@ class UserModel {
         'liked_posts': likedPosts,
         'posts': posts,
         'bookmarks': bookmarks,
-        // 'followers': followers,
-        // 'following': following,
+        'followers': followers,
+        'following': following,
       };
 }
 
-class Follower {
+class FollowModel {
   String? uid;
   String? username;
   String? avatarUrl;
 
-  Follower.fromJson(Map<String, dynamic> json) {
-    uid = json['uid'];
-    username = json['username'];
-    avatarUrl = json['avatar_url'];
-  }
+  FollowModel({this.uid, this.username, this.avatarUrl});
 
-  Map<String, dynamic> toJson() => {
-        'uid': uid,
-        'username': username,
-        'avatar_url': avatarUrl,
-      };
-}
-
-class Following {
-  String? uid;
-  String? username;
-  String? avatarUrl;
-
-  Following.fromJson(Map<String, dynamic> json) {
+  FollowModel.fromJson(Map<String, dynamic> json) {
     uid = json['uid'];
     username = json['username'];
     avatarUrl = json['avatar_url'];

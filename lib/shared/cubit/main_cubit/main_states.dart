@@ -26,6 +26,10 @@ class MainLoadingState extends MainStates {}
   class MainUnFollowUserSuccessState extends MainStates{}
   class MainUnFollowUserErrorState extends MainStates{}
 
+  //edit profile states
+  class MainEditProfileSuccessState extends MainStates{}
+  class MainEditProfileErrorState extends MainStates{}
+
 //post
 
   //get posts
@@ -54,7 +58,3 @@ class MainLoadingState extends MainStates {}
   //bookmark post
   class MainBookmarkPostSuccessState extends MainStates {}
   class MainBookmarkPostErrorState extends MainStates {}
-
-  //edit profile states
-  class MainEditProfileSuccessState extends MainStates{}
-  class MainEditProfileErrorState extends MainStates{}
