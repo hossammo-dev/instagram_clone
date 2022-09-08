@@ -58,3 +58,14 @@ class MainLoadingState extends MainStates {}
   //bookmark post
   class MainBookmarkPostSuccessState extends MainStates {}
   class MainBookmarkPostErrorState extends MainStates {}
+
+
+//message
+
+  //send message
+  class MainSendMessageSuccessState extends MainStates{}
+  class MainSendMessageErrorState extends MainStates{}
+
+  //get messages
+  class MainGetMessagesSuccessState extends MainStates{}
+  class MainGetMessagesErrorState extends MainStates{}

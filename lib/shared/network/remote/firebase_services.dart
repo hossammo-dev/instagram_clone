@@ -11,7 +11,8 @@ class FirebaseServices {
 
   //login
   static Future<UserCredential> login(
-          {String? email, String? password}) async => await _auth.signInWithEmailAndPassword(
+          {String? email, String? password}) async =>
+      await _auth.signInWithEmailAndPassword(
           email: email!, password: password!);
 
   //register
@@ -27,9 +28,25 @@ class FirebaseServices {
   static Future<void> save({
     required String collection,
     required String docId,
+    String? secondCollection,
+    String? secondDocId,
+    String? thirdCollection,
+    String? thirdDocId,
     required Map<String, dynamic> data,
-  }) =>
-      _db.collection(collection).doc(docId).set(data);
+  }) {
+    if (secondCollection!.isEmpty && secondDocId!.isEmpty) {
+      return _db.collection(collection).doc(docId).set(data);
+    } else {
+      return _db
+          .collection(collection)
+          .doc(docId)
+          .collection(secondCollection)
+          .doc(secondDocId)
+          .collection(thirdCollection!)
+          .doc(thirdDocId)
+          .set(data);
+    }
+  }
 
   //get
   static Future<DocumentSnapshot<Map<String, dynamic>>> get({
@@ -74,5 +91,4 @@ class FirebaseServices {
         (value) => value.ref.getDownloadURL().then((url) => _imageUrl = url));
     return _imageUrl;
   }
-
 }

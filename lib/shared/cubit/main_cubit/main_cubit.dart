@@ -7,6 +7,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../models/bookmark_model.dart';
+import '../../../models/message_model.dart';
 import '../../../models/post_model.dart';
 import '../../../models/user_model.dart';
 import '../../constants.dart';
@@ -34,6 +35,9 @@ class MainCubit extends Cubit<MainStates> {
   final List<UserModel> _users = [];
   List<UserModel> get users => _users;
 
+  final List<MessageModel> _messages = [];
+  List<MessageModel> get messages => _messages;
+
   //get user
   void getUserData() {
     FirebaseServices.get(collection: 'users', docId: Constants.userId)
@@ -47,14 +51,16 @@ class MainCubit extends Cubit<MainStates> {
 
   //get all users
   void getAllUsers() {
-    FirebaseServices.getAll(collection: 'users').then((users) {
-      for (var user in users.docs) {
-        _users.add(UserModel.fromjson(user.data()));
-      }
-      emit(MainGetAllUsersSuccessState());
-    }).catchError((error) {
-      emit(MainGetAllUsersErrorState());
-    });
+    if (_users.isEmpty) {
+      FirebaseServices.getAll(collection: 'users').then((users) {
+        for (var user in users.docs) {
+          _users.add(UserModel.fromjson(user.data()));
+        }
+        emit(MainGetAllUsersSuccessState());
+      }).catchError((error) {
+        emit(MainGetAllUsersErrorState());
+      });
+    }
   }
 
   //remove cached data
@@ -319,6 +325,55 @@ class MainCubit extends Cubit<MainStates> {
       getUserData();
       emit(MainEditProfileSuccessState());
     }).catchError((error) => emit(MainEditProfileErrorState()));
+  }
+
+  //messages
+  // Stream<QuerySnapshot> getMessages() {
+  //   FirebaseServices.getStream(collection: 'messages').listen((event) {
+  //     event.docs.map((e) => );
+  //     return event.docs;
+  //   });
+  // }
+
+  //send message
+  Future<void> sendMessage({
+    required String message,
+    required String receiverId,
+    required String receiverName,
+  }) async {
+    final _messageId = const Uuid().v4();
+    final _message = MessageModel(
+      id: _messageId,
+      senderId: _userModel!.uid!,
+      receiverId: receiverId,
+      message: message,
+      time: DateTime.now(),
+    );
+
+    //me chats
+    FirebaseServices.save(
+            collection: 'users',
+            docId: _userModel!.uid!,
+            secondCollection: 'chats',
+            secondDocId: receiverName,
+            thirdCollection: 'messages',
+            thirdDocId: _messageId,
+            data: _message.toJson())
+        .whenComplete(() {
+      //receiver chats
+      FirebaseServices.save(
+          collection: 'users',
+          docId: receiverId,
+          secondCollection: 'chats',
+          secondDocId: _userModel?.username,
+          thirdCollection: 'messages',
+          thirdDocId: _messageId,
+          data: _message.toJson());
+      emit(MainSendMessageSuccessState());
+    }).catchError((error) {
+      debugPrint(error.toString());
+      emit(MainSendMessageErrorState());
+    });
   }
 
   Future<File?> pickImage(ImageSource source) async {

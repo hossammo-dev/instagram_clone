@@ -25,7 +25,9 @@ class FieldContainer extends StatelessWidget {
       child: Row(
         children: [
           FloatingActionButton(
-            onPressed: () {},
+            onPressed: () {
+              //todo: send image
+            },
             mini: true,
             backgroundColor: Colors.blueAccent.shade200,
             child: const Icon(Icons.camera_alt),
