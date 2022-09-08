@@ -28,13 +28,13 @@ class FirebaseServices {
   static Future<void> save({
     required String collection,
     required String docId,
-    String? secondCollection,
+    String secondCollection = '',
     String? secondDocId,
     String? thirdCollection,
     String? thirdDocId,
     required Map<String, dynamic> data,
   }) {
-    if (secondCollection!.isEmpty && secondDocId!.isEmpty) {
+    if (secondCollection == '') {
       return _db.collection(collection).doc(docId).set(data);
     } else {
       return _db
@@ -63,12 +63,12 @@ class FirebaseServices {
   //get stream
   static Stream<QuerySnapshot<Map<String, dynamic>>> getStream({
     required String collection,
-    String? docId,
+    String docId = '',
     String? secondCollection,
     String? secondDocId,
     String? thirdCollection,
   }) {
-    if (docId!.isEmpty && secondCollection!.isEmpty) {
+    if (docId == '') {
       return _db
           .collection(collection)
           .orderBy('time', descending: true)

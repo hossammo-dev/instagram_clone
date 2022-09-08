@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart'; //todo remove
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:instagram_clone/shared/widgets/components.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../models/bookmark_model.dart';
@@ -185,17 +186,26 @@ class MainCubit extends Cubit<MainStates> {
     );
 
     await FirebaseServices.save(
-        collection: 'posts', docId: _postId, data: _model.toJson());
-    await FirebaseServices.update(
-      collection: 'users',
-      docId: _userModel!.uid!,
-      data: {
-        'posts': FieldValue.arrayUnion([_model.toJson()]),
-      },
-    );
-    await getPosts();
-    getUserData();
-    emit(MainCreatePostSuccessState());
+            collection: 'posts', docId: _postId, data: _model.toJson())
+        .whenComplete(() async {
+      await FirebaseServices.update(
+        collection: 'users',
+        docId: _userModel!.uid!,
+        data: {
+          'posts': FieldValue.arrayUnion([_model.toJson()]),
+        },
+      );
+      await getPosts();
+      getUserData();
+      emit(MainCreatePostSuccessState());
+    }).catchError((error) {
+      defaultToast(
+        message: error.toString(),
+        bgColor: Colors.red,
+        txColor: Colors.white,
+      );
+      emit(MainCreatePostErrorState());
+    });
   }
 
   //like post
