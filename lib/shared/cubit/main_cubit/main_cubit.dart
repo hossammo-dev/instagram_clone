@@ -328,12 +328,13 @@ class MainCubit extends Cubit<MainStates> {
   }
 
   //messages
-  // Stream<QuerySnapshot> getMessages() {
-  //   FirebaseServices.getStream(collection: 'messages').listen((event) {
-  //     event.docs.map((e) => );
-  //     return event.docs;
-  //   });
-  // }
+  Stream<QuerySnapshot<Map<String, dynamic>>> getMessages(String id) =>
+      FirebaseServices.getStream(
+          collection: 'users',
+          docId: userModel!.uid!,
+          secondCollection: 'chats',
+          secondDocId: id,
+          thirdCollection: 'messages');
 
   //send message
   Future<void> sendMessage({

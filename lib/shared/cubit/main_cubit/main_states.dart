@@ -65,7 +65,3 @@ class MainLoadingState extends MainStates {}
   //send message
   class MainSendMessageSuccessState extends MainStates{}
   class MainSendMessageErrorState extends MainStates{}
-
-  //get messages
-  class MainGetMessagesSuccessState extends MainStates{}
-  class MainGetMessagesErrorState extends MainStates{}

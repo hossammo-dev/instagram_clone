@@ -61,7 +61,7 @@ class _ChatsScreenState extends State<ChatsScreen> {
                               padding: const EdgeInsets.all(8.0),
                               child: ListTile(
                                 onTap: () => navigateTo(context,
-                                    page: ChatDetailsScreen()),
+                                    page: ChatDetailsScreen(_user)),
                                 leading: CachedImage(
                                   imageUrl: _user.avatarUrl!,
                                   circle: true,

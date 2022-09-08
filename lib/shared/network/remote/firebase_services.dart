@@ -61,12 +61,29 @@ class FirebaseServices {
       await _db.collection(collection).get();
 
   //get stream
-  static Stream<QuerySnapshot<Map<String, dynamic>>> getStream(
-          {required String collection}) =>
-      _db
+  static Stream<QuerySnapshot<Map<String, dynamic>>> getStream({
+    required String collection,
+    String? docId,
+    String? secondCollection,
+    String? secondDocId,
+    String? thirdCollection,
+  }) {
+    if (docId!.isEmpty && secondCollection!.isEmpty) {
+      return _db
           .collection(collection)
-          .orderBy('created_at', descending: true)
+          .orderBy('time', descending: true)
           .snapshots();
+    } else {
+      return _db
+          .collection(collection)
+          .doc(docId)
+          .collection(secondCollection!)
+          .doc(secondDocId)
+          .collection(thirdCollection!)
+          .orderBy('time', descending: true)
+          .snapshots();
+    }
+  }
 
   //update data
   static Future<void> update({
