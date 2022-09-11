@@ -65,3 +65,8 @@ class MainLoadingState extends MainStates {}
   //send message
   class MainSendMessageSuccessState extends MainStates{}
   class MainSendMessageErrorState extends MainStates{}
+
+
+//add to activity
+class MainAddToActivitySuccessState extends MainStates{}
+class MainAddToActivityErrorState extends MainStates{}

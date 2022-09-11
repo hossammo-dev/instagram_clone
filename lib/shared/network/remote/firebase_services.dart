@@ -71,7 +71,7 @@ class FirebaseServices {
     if (docId == '') {
       return _db
           .collection(collection)
-          .orderBy('time', descending: true)
+          .orderBy('time')
           .snapshots();
     } else {
       return _db
@@ -80,7 +80,7 @@ class FirebaseServices {
           .collection(secondCollection!)
           .doc(secondDocId)
           .collection(thirdCollection!)
-          .orderBy('time', descending: true)
+          .orderBy('time')
           .snapshots();
     }
   }

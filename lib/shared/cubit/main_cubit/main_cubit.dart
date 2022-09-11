@@ -7,6 +7,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:instagram_clone/shared/widgets/components.dart';
 import 'package:uuid/uuid.dart';
 
+import '../../../models/activity_model.dart';
 import '../../../models/bookmark_model.dart';
 import '../../../models/message_model.dart';
 import '../../../models/post_model.dart';
@@ -106,6 +107,8 @@ class MainCubit extends Cubit<MainStates> {
           });
       //update user model
       _userModel?.followers?.add(_followerModel);
+      _addToActivity(_userModel!,
+          activityTitle: "${_userModel!.username} followed $username");
       emit(MainFollowUserSuccessState());
     }).catchError((error) {
       debugPrint(error.toString());
@@ -141,7 +144,8 @@ class MainCubit extends Cubit<MainStates> {
           });
       //update user model
       _userModel?.followers?.remove(_followerModel);
-
+      _addToActivity(_userModel!,
+          activityTitle: "${_userModel!.username} unfollowed $username");
       emit(MainFollowUserSuccessState());
     }).catchError((error) {
       debugPrint(error.toString());
@@ -197,6 +201,8 @@ class MainCubit extends Cubit<MainStates> {
       );
       await getPosts();
       getUserData();
+      _addToActivity(_userModel!,
+          activityTitle: "${_userModel!.username} created a new post");
       emit(MainCreatePostSuccessState());
     }).catchError((error) {
       defaultToast(
@@ -228,6 +234,9 @@ class MainCubit extends Cubit<MainStates> {
           });
       _posts[index].likes!.add(_like);
       _userModel!.likedPosts!.add(post);
+      _addToActivity(_userModel!,
+          activityTitle:
+              "${_userModel!.username} liked ${post.username}'s post");
       emit(MainLikePostSuccessState());
     }).catchError((error) {
       debugPrint('$error');
@@ -272,6 +281,9 @@ class MainCubit extends Cubit<MainStates> {
       'comments': FieldValue.arrayUnion([_comment.toJson()])
     }).whenComplete(() async {
       await getPosts();
+      _addToActivity(_userModel!,
+          activityTitle:
+              "${_userModel!.username} commented on post}"); //todo: repair this and set it to user's post
       emit(MainCommentPostSuccessState());
     }).catchError((error) {
       debugPrint('$error');
@@ -384,6 +396,27 @@ class MainCubit extends Cubit<MainStates> {
     }).catchError((error) {
       debugPrint(error.toString());
       emit(MainSendMessageErrorState());
+    });
+  }
+
+  //add to activity
+  Future<void> _addToActivity(UserModel user,
+      {required String activityTitle}) async {
+    final _docId = const Uuid().v4();
+    final _model = ActivityModel(
+      id: _docId,
+      uid: user.uid,
+      avatarUrl: user.avatarUrl,
+      activityTitle: activityTitle,
+      time: DateTime.now(),
+    );
+
+    FirebaseServices.save(
+      collection: 'activities',
+      docId: _docId,
+      data: _model.toJson(),
+    ).whenComplete(() {
+      emit(MainAddToActivitySuccessState());
     });
   }
 
