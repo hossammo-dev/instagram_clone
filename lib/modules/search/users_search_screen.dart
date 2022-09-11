@@ -4,7 +4,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../../shared/widgets/cached_image.dart';
 
-
 class UsersSearchScreen extends StatefulWidget {
   const UsersSearchScreen({Key? key}) : super(key: key);
 
@@ -81,7 +80,8 @@ class _UsersSearchScreenState extends State<UsersSearchScreen> {
                           if (_isWriting)
                             GestureDetector(
                               onTap: () => _queryController.clear(),
-                            child: const Icon(Icons.close, color: Colors.white),
+                              child:
+                                  const Icon(Icons.close, color: Colors.white),
                             ),
                         ],
                       ),
@@ -95,17 +95,14 @@ class _UsersSearchScreenState extends State<UsersSearchScreen> {
                 stream: _queryStream,
                 builder: (context, snapshot) {
                   if (!snapshot.hasData || _queryController.text.isEmpty) {
-                    print("no data");
                     return const SizedBox();
                   } else {
-                    print("has data");
                     print(snapshot.data!.docs.length);
                     return Expanded(
                       child: ListView.builder(
                         itemCount: snapshot.data!.docs.length,
                         itemBuilder: (context, index) {
                           final _user = snapshot.data!.docs[index].data();
-                          print(_user['avatar_url']);
                           return ListTile(
                             leading: CachedImage(
                               imageUrl: _user['avatar_url'],

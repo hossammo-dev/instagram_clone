@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:instagram_clone/modules/search/users_search_screen.dart';
 import 'package:instagram_clone/shared/widgets/components.dart';
 
 import '../../shared/constants.dart';
+import '../../shared/cubit/main_cubit/main_cubit.dart';
+import '../../shared/cubit/main_cubit/main_states.dart';
 import '../../shared/widgets/cached_image.dart';
 
 class SearchScreen extends StatelessWidget {
@@ -18,7 +21,7 @@ class SearchScreen extends StatelessWidget {
         child: Column(
           children: [
             GestureDetector(
-              onTap: () => navigateTo(context, page: UsersSearchScreen()),
+              onTap: () => navigateTo(context, page: const UsersSearchScreen()),
               child: Container(
                 height: 35,
                 width: double.infinity,
@@ -45,17 +48,25 @@ class SearchScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 10),
-            GridView.builder(
-              itemCount: 100,
-              physics: const NeverScrollableScrollPhysics(),
-              shrinkWrap: true,
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 3,
-                crossAxisSpacing: 3,
-                mainAxisSpacing: 3,
-              ),
-              itemBuilder: (context, index) =>
-                  CachedImage(imageUrl: Constants.dummyImage),
+            BlocConsumer<MainCubit, MainStates>(
+              listener: (context, state) {},
+              builder: (context, state) {
+                final _posts = MainCubit.get(context).posts;
+                return GridView.builder(
+                  itemCount: _posts.length,
+                  physics: const NeverScrollableScrollPhysics(),
+                  shrinkWrap: true,
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 3,
+                    crossAxisSpacing: 3,
+                    mainAxisSpacing: 3,
+                  ),
+                  itemBuilder: (context, index) {
+                    final _post = _posts[index];
+                    return CachedImage(imageUrl: _post.postImageUrl!);
+                  },
+                );
+              },
             ),
           ],
         ),
