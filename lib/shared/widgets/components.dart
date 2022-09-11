@@ -34,6 +34,7 @@ TextFormField defaultTextField({
   bool? showPassword = false,
   VoidCallback? changePassVisibility,
   InputBorder? border = const UnderlineInputBorder(),
+  bool readOnly = false,
 }) =>
     TextFormField(
       controller: controller,
@@ -43,6 +44,7 @@ TextFormField defaultTextField({
         if (value!.isEmpty) return 'This field is required';
         return null;
       },
+      readOnly: readOnly,
       decoration: InputDecoration(
         hintText: hint,
         labelText: label,
