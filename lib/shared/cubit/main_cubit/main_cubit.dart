@@ -40,6 +40,9 @@ class MainCubit extends Cubit<MainStates> {
   final List<MessageModel> _messages = [];
   List<MessageModel> get messages => _messages;
 
+  final List<ActivityModel> _activities = [];
+  List<ActivityModel> get activities => _activities;
+
   //get user
   void getUserData() {
     FirebaseServices.get(collection: 'users', docId: Constants.userId)
@@ -164,6 +167,7 @@ class MainCubit extends Cubit<MainStates> {
       for (var post in event.docs) {
         _posts.add(PostModel.fromJson(post.data()));
       }
+      // event.docs.map((post) => _posts.add(PostModel.fromJson(post.data())));
     });
     emit(MainGetPostsSuccessState());
   }
@@ -416,8 +420,19 @@ class MainCubit extends Cubit<MainStates> {
       docId: _docId,
       data: _model.toJson(),
     ).whenComplete(() {
+      _activities.add(_model);
       emit(MainAddToActivitySuccessState());
     });
+  }
+
+  //get activities
+  Future<List<ActivityModel>> getActivities() async {
+    _activities.clear();
+    await FirebaseServices.getAll(collection: 'activities').then((activities) {
+      activities.docs.map((activity) => _activities.add(ActivityModel.fromJson(activity.data()))).toList();
+      emit(MainGetActivitiesSuccessState());
+    });
+    return _activities;
   }
 
   Future<File?> pickImage(ImageSource source) async {

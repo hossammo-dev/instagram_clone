@@ -70,3 +70,6 @@ class MainLoadingState extends MainStates {}
 //add to activity
 class MainAddToActivitySuccessState extends MainStates{}
 class MainAddToActivityErrorState extends MainStates{}
+
+//get activities
+class MainGetActivitiesSuccessState extends MainStates{}
